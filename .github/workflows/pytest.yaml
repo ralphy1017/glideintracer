@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2022 Fermi Research Alliance, LLC
+# SPDX-License-Identifier: Apache-2.0
+
+---
+name: PyTest
+on:
+  push:
+    branches:
+      - "**" # matches every branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run_linters:
+    name: Run unit test against code tree
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code tree
+        uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+          architecture: "x64"
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt; fi
+      - name: Unit test
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          python3 -m pytest --import-mode=append src
