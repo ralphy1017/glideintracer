@@ -11,6 +11,17 @@ Glidein TRacer development
 
 This project uses the [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow)
 
+The main repo is hosted on GitHub: https://github.com/glideinWMS/glideintracer
+
+We recommend to use the [GitHub CLI](https://cli.github.com/) to easily authenticate and interact with GitHub.
+[Here]() are the install istructions, e.g. on RedHat based distros (dnf):
+```
+sudo dnf install 'dnf-command(config-manager)'
+sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+sudo dnf install gh
+```
+Then you can use commands like `gh auth login`.
+
 # Getting Started with development
 
 NOTE: This project has a pre-commit config.
