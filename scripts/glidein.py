@@ -18,7 +18,7 @@ from opentelemetry.trace.propagation.tracecontext import \
 # ideally, these are read from the environment and have defaults (ex: server = "localhost", port = 6831)
 jaeger_service = "glidein"
 server = "localhost"
-port = 14268
+port = 6831
 
 
 class Tracer:
@@ -51,8 +51,7 @@ class Tracer:
         
         jaeger_exporter = JaegerExporter(
             agent_host_name=self.server,
-            #agent_port=self.port,
-            collector_endpoint="http://fermicloud296.fnal.gov:14268/api/traces?format=jaeger.thrift"
+            agent_port=self.port,
         )
         span_processor = BatchSpanProcessor(jaeger_exporter)
         trace.get_tracer_provider().add_span_processor(span_processor)
