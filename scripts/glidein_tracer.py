@@ -4,7 +4,9 @@
 # GlideinWMS documentation for GlideFactoryLib.py, constructing 
 # a Tracer and Trace class to give Glidein's unique TRACE_ID 
 # and methods to send child spans or print the TRACE_ID of Glidein
-
+import os
+os.environ['OTEL_PROPAGATORS']='jaeger'
+from opentelemetry import propagate
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
@@ -17,8 +19,8 @@ from opentelemetry.trace.propagation.tracecontext import \
 # Global variables to establish tracing to Jaeger
 # ideally, these are read from the environment and have defaults (ex: server = "localhost", port = 6831)
 jaeger_service = "glidein"
-server = "localhost"
-port = 6831
+server = "fermicloud296.fnal.gov"
+port = 14268
 
 
 class Tracer:
@@ -60,8 +62,9 @@ class Tracer:
         
         with self.tracer.start_as_current_span("parent") as parent: #this is the parent span for each submitted glidein
             TraceContextTextMapPropagator().inject(carrier=self.carrier)
-            self.SpanContext = parent.get_span_context()
-            self.GLIDEIN_TRACE_ID = (hex(self.SpanContext.trace_id))
+            c={}
+            propagate.inject(c)
+            self.GLIDEIN_TRACE_ID=c['uber-trace-id']
             
 class Trace:
     def __init__(self, tracer, carrier): 
@@ -88,8 +91,9 @@ class Trace:
     def send_span(self):
         self.ctx = TraceContextTextMapPropagator().extract(carrier=self.carrier)
         with self.tracer.start_as_current_span("child", context=self.ctx) as child:
-            self.SpanContext = child.get_span_context()
-            self.GLIDEIN_SPAN_ID = (hex(self.SpanContext.span_id))
+            c={}
+            propagate.inject(c)
+            self.GLIDEIN_SPAN_ID=c['uber-trace-id']
     
     def get_span_ID(self):
         print(self.GLIDEIN_SPAN_ID)
